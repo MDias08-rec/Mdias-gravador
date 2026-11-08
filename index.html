@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MDias Gravador">
+<title>MDias Gravador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/app/estilo.css">
+</head>
+<body>
+
+<div class="loading" id="carregando">Carregando…</div>
+
+<!-- ============ LOGIN ============ -->
+<section class="screen" id="login" hidden>
+  <div class="wrap">
+    <div class="login-head">
+      <div class="brand">MDias</div>
+      <h1>Grave seu vídeo no padrão certo</h1>
+      <p>Entre com o usuário e a senha que você recebeu da equipe.</p>
+    </div>
+    <form id="formLogin" novalidate>
+      <div class="field">
+        <label for="usuario">Usuário</label>
+        <input id="usuario" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+      </div>
+      <div class="field">
+        <label for="senha">Senha</label>
+        <input id="senha" type="password" autocomplete="current-password" required>
+      </div>
+      <div class="err" id="loginErr" role="alert"></div>
+      <button class="btn btn-primary" type="submit" id="btnEntrar">Entrar</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ HOME DO DOUTOR ============ -->
+<section class="screen" id="home" hidden>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">MDias</div>
+      <div class="gestao-acts">
+        <button class="btn btn-ghost btn-sm" data-acao="senha">Senha</button>
+        <button class="btn btn-ghost btn-sm" data-acao="sair">Sair</button>
+      </div>
+    </div>
+    <div class="hello">
+      <h1 id="olaNome"></h1>
+      <p id="olaUnidade"></p>
+    </div>
+    <div class="eyebrow" style="margin-bottom:12px">Seu roteiro</div>
+    <div class="list" id="listaRoteiros"></div>
+  </div>
+</section>
+
+<!-- ============ ROTEIRO ============ -->
+<section class="screen" id="roteiro" hidden>
+  <div class="wrap">
+    <div class="topbar">
+      <button class="back" id="rVoltar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Início</button>
+    </div>
+    <div class="r-head">
+      <div class="eyebrow">Leia antes de gravar</div>
+      <h1 id="rTitulo"></h1>
+      <p id="rObjetivo"></p>
+    </div>
+    <div class="blocks" id="rBlocos"></div>
+  </div>
+  <div class="sticky-cta"><button class="btn btn-primary" id="vamosGravar">Vamos gravar</button></div>
+</section>
+
+<!-- ============ GRAVAR ============ -->
+<section class="screen" id="gravar" hidden>
+  <div class="prompt">
+    <div class="p-meta">
+      <div class="eyebrow" id="pBloco"></div>
+      <div class="p-ctrl">
+        <button class="chip" id="mFrase">Frase</button>
+        <button class="chip" id="mRolar">Rolar</button>
+        <button class="chip" id="vMenos" aria-label="Mais devagar" hidden>−</button>
+        <button class="chip" id="vMais" aria-label="Mais rápido" hidden>+</button>
+      </div>
+    </div>
+    <div class="p-body" id="pBody"></div>
+    <div class="look" id="pDica">Olhe para a lente, logo acima deste texto</div>
+  </div>
+  <div class="stage">
+    <div class="frame">
+      <video id="cam" autoplay playsinline muted></video>
+      <svg class="guide" id="guia" viewBox="0 0 90 160" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+      <div class="cam-msg" id="camMsg" hidden></div>
+      <div class="count" id="count" hidden></div>
+      <div class="controls">
+        <div class="left"><button class="round" id="sairGravar" aria-label="Voltar ao roteiro"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+        <button class="recbtn" id="rec" aria-label="Gravar"><span></span></button>
+        <div class="right"><div class="timer" id="timer" hidden><i></i><span id="tempo">0:00</span></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="review" id="review" hidden>
+    <div class="eyebrow" id="revBloco"></div>
+    <h2>Ficou bom?</h2>
+    <video id="revVideo" playsinline controls></video>
+    <div class="row">
+      <button class="btn btn-ghost" id="regravar">Regravar</button>
+      <button class="btn btn-primary" id="usarTake">Usar este</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL ============ -->
+<section class="screen" id="final" hidden>
+  <div class="wrap">
+    <div class="done-head">
+      <div class="eyebrow" style="color:var(--ok)">Tudo gravado</div>
+      <h1>Agora é só enviar</h1>
+      <p>Toque em "Enviar todos" e salve os vídeos ou mande para a equipe MDias.</p>
+    </div>
+    <div class="list" id="takes"></div>
+    <p class="note">Evite enviar pelo WhatsApp como vídeo comum, porque ele reduz a qualidade. Se for usar o WhatsApp, envie como documento.</p>
+  </div>
+  <div class="sticky-cta">
+    <div style="max-width:524px;margin:0 auto;display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-primary" id="enviarTodos">Enviar todos</button>
+      <button class="btn btn-ghost" id="finalVoltar">Voltar ao início</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GESTÃO ============ -->
+<section class="screen" id="gestao" hidden>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">MDias <span style="color:var(--muted);font-weight:600;font-size:14px">Gestão</span></div>
+      <div class="gestao-acts">
+        <button class="btn btn-ghost btn-sm" data-acao="senha">Senha</button>
+        <button class="btn btn-ghost btn-sm" data-acao="sair">Sair</button>
+      </div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" data-aba="unidades">Unidades</button>
+      <button class="tab" data-aba="doutores">Doutores</button>
+      <button class="tab" data-aba="roteiros">Roteiros</button>
+    </div>
+    <div class="g-body" id="gBody"></div>
+  </div>
+</section>
+
+<!-- ============ EDITOR DE ROTEIRO ============ -->
+<section class="screen" id="editor" hidden>
+  <div class="wrap">
+    <div class="topbar">
+      <button class="back" id="eVoltar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Roteiros</button>
+      <button class="link-del" id="eExcluir">Excluir roteiro</button>
+    </div>
+    <div class="g-body">
+      <div class="field"><label for="eTitulo">Nome do roteiro</label><input class="inp" id="eTitulo"></div>
+      <div class="field"><label for="eObjetivo">Objetivo (o doutor vê isso)</label><input class="inp" id="eObjetivo"></div>
+      <div class="eyebrow" style="margin-top:6px">Blocos de gravação</div>
+      <div class="g-body" id="eBlocos"></div>
+      <button class="btn btn-ghost" id="eAddBloco">+ Adicionar bloco</button>
+      <p class="g-help" id="eStatus">As alterações são salvas automaticamente.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TROCAR SENHA ============ -->
+<div class="sheet" id="sheetSenha" hidden>
+  <form class="sheet-card" id="formSenha">
+    <h3>Trocar minha senha</h3>
+    <div class="field"><label for="novaSenha">Nova senha (mínimo 6 caracteres)</label><input class="inp" id="novaSenha" type="password" autocomplete="new-password"></div>
+    <div class="err" id="senhaErr" role="alert"></div>
+    <div class="row" style="display:flex;gap:10px">
+      <button class="btn btn-ghost" type="button" id="senhaCancelar">Cancelar</button>
+      <button class="btn btn-primary" type="submit">Salvar senha</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="/app/app.js"></script>
+</body>
+</html>
