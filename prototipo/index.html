@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Estúdio de Bolso MDias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: app de tela única, telas empilhadas; gravação ocupa a tela toda com prompter no topo (perto da lente) */
+:root{
+  --bg:#0b0b0b; --surface:#161514; --surface-2:#1f1d1b; --line:#2c2926;
+  --fg:#f1f1f1; --muted:#a29d98; --accent:#f65612; --accent-ink:#ffffff;
+  --rec:#e5383b; --ok:#3fbf7f;
+  --font:"Montserrat",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --r:14px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:var(--font);-webkit-font-smoothing:antialiased}
+body{font-size:15px;line-height:1.5}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.2}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right));padding-top:calc(env(safe-area-inset-top) + 18px);padding-bottom:calc(env(safe-area-inset-bottom) + 110px)}
+.brand{font-weight:800;letter-spacing:-.02em;font-size:20px}
+.brand b{color:var(--accent)}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;height:54px;border-radius:999px;font-weight:700;font-size:16px;width:100%}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-ghost{background:var(--surface-2);border:1px solid var(--line)}
+.btn-sm{height:40px;font-size:14px;padding:0 16px;width:auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+.back{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 14px 0 8px;border-radius:999px;background:var(--surface-2);font-weight:600;font-size:14px}
+.back svg{width:18px;height:18px}
+
+/* Login */
+#login .wrap{min-height:100%;display:flex;flex-direction:column;justify-content:center;padding-bottom:calc(env(safe-area-inset-bottom) + 30px)}
+.login-head{margin-bottom:34px}
+.login-head h1{font-size:30px;font-weight:800;letter-spacing:-.02em;margin-top:18px}
+.login-head p{color:var(--muted);margin:8px 0 0}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:13px;font-weight:600;color:var(--muted)}
+.field input{height:54px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:0 16px;font:inherit;font-size:16px}
+.err{color:#ff8a7a;font-size:14px;min-height:22px;margin:4px 0 10px}
+.demo{margin-top:26px;padding:14px 16px;border-radius:12px;border:1px dashed var(--line);color:var(--muted);font-size:13px}
+.demo code{color:var(--fg);font-weight:600}
+
+/* Home */
+.hello h1{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.hello p{color:var(--muted);margin:4px 0 26px}
+.list{display:flex;flex-direction:column;gap:12px}
+.card{display:flex;flex-direction:column;gap:12px;text-align:left;width:100%;padding:18px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line)}
+.card h3{font-size:17px;font-weight:700}
+.card p{margin:0;color:var(--muted);font-size:14px}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.step{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.step i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.step.done{color:var(--fg)} .step.done i{background:var(--ok)}
+.card-foot{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;color:var(--accent)}
+
+/* Roteiro */
+.r-head h1{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:6px}
+.r-head p{color:var(--muted);margin:6px 0 24px}
+.blocks{display:flex;flex-direction:column;gap:14px}
+.block{padding:18px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line)}
+.block-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.tag{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.frame-chip{font-size:12px;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.frame-chip svg{width:14px;height:20px}
+.block .text{font-size:19px;line-height:1.5;font-weight:500;margin:0}
+.block .tip{margin:12px 0 0;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.sticky-cta{position:fixed;left:0;right:0;bottom:0;padding:16px max(18px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 16px) max(18px,env(safe-area-inset-left));background:linear-gradient(transparent,var(--bg) 35%)}
+.sticky-cta .btn{max-width:524px;margin:0 auto}
+
+/* Gravação */
+#gravar{position:fixed;inset:0;background:#000;display:flex;flex-direction:column}
+.prompt{flex:0 0 auto;height:clamp(118px,24dvh,210px);padding:calc(env(safe-area-inset-top) + 8px) max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:6px;background:var(--bg);position:relative;z-index:3}
+.p-meta{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.p-meta .eyebrow{color:var(--accent)}
+.p-ctrl{display:flex;gap:6px;align-items:center}
+.chip{height:30px;padding:0 12px;border-radius:999px;background:var(--surface-2);font-size:12px;font-weight:700}
+.chip.on{background:var(--fg);color:#000}
+.p-body{flex:1;min-height:0;position:relative;overflow:hidden}
+.frase{font-size:clamp(20px,5.6vw,28px);font-weight:700;line-height:1.3;margin:0}
+.frase-next{font-size:15px;color:var(--muted);margin:6px 0 0;font-weight:500}
+.scroller{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;-webkit-mask-image:linear-gradient(#000 70%,transparent)}
+.scroller::-webkit-scrollbar{display:none}
+.scroller p{font-size:clamp(20px,5.6vw,28px);font-weight:700;line-height:1.4;margin:0;padding-bottom:60%}
+.p-tap{position:absolute;inset:0}
+.look{font-size:11px;color:var(--muted);text-align:center;letter-spacing:.04em}
+
+.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;container-type:size;background:#000}
+.frame{position:relative;width:min(100cqw,calc(100cqh * 9 / 16));height:min(100cqh,calc(100cqw * 16 / 9));overflow:hidden;background:#111}
+.frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#cam{transform:scaleX(-1)}
+.guide{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.guide .shape{fill:none;stroke:#fff;stroke-width:.55;stroke-dasharray:2 1.6;opacity:.9}
+.guide .ln{stroke:var(--accent);stroke-width:.4;stroke-dasharray:1.5 1.2}
+.guide text{font-family:var(--font);font-size:3.1px;font-weight:700;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:.6px}
+.guide.rec .shape{opacity:.35}
+.cam-msg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center;color:var(--muted);font-size:14px}
+.res{position:absolute;top:8px;right:8px;font-size:10px;font-weight:600;color:#fff;opacity:.6;background:#0008;padding:2px 6px;border-radius:6px}
+
+.controls{position:absolute;left:0;right:0;bottom:0;padding:18px max(16px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 16px) max(16px,env(safe-area-inset-left));display:grid;grid-template-columns:1fr auto 1fr;align-items:center;background:linear-gradient(transparent,#000a)}
+.controls .left{justify-self:start}
+.controls .right{justify-self:end;text-align:right}
+.recbtn{width:76px;height:76px;border-radius:50%;border:4px solid #fff;display:grid;place-items:center}
+.recbtn span{width:56px;height:56px;border-radius:50%;background:var(--rec);transition:all .2s}
+.recbtn.on span{width:28px;height:28px;border-radius:7px}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;display:inline-flex;align-items:center;gap:6px}
+.timer i{width:9px;height:9px;border-radius:50%;background:var(--rec);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.2}}
+.round{width:44px;height:44px;border-radius:50%;background:#0009;display:grid;place-items:center}
+.round svg{width:20px;height:20px}
+.count{position:absolute;inset:0;display:grid;place-items:center;font-size:120px;font-weight:800;color:#fff;text-shadow:0 4px 30px #000a;pointer-events:none}
+
+.review{position:absolute;inset:0;z-index:5;background:var(--bg);display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 14px) max(16px,env(safe-area-inset-right)) calc(env(safe-area-inset-bottom) + 16px) max(16px,env(safe-area-inset-left));gap:12px}
+.review video{flex:1;min-height:0;width:100%;object-fit:contain;background:#000;border-radius:12px}
+.review .row{display:flex;gap:10px}
+.review h2{font-size:18px;font-weight:800}
+
+/* Final */
+.done-head h1{font-size:26px;font-weight:800;margin-top:6px}
+.done-head p{color:var(--muted);margin:6px 0 22px}
+.take{display:grid;grid-template-columns:72px 1fr auto;gap:14px;align-items:center;padding:12px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line)}
+.take video{width:72px;height:128px;object-fit:cover;border-radius:8px;background:#000}
+.take h3{font-size:15px;font-weight:700}
+.take p{margin:2px 0 0;font-size:12px;color:var(--muted);word-break:break-all}
+.note{font-size:13px;color:var(--muted);margin-top:16px}
+
+/* Gestão */
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:999px;background:var(--surface);border:1px solid var(--line);margin-bottom:18px}
+.tab{height:40px;border-radius:999px;font-weight:700;font-size:14px;color:var(--muted)}
+.tab.on{background:var(--accent);color:var(--accent-ink)}
+.g-body{display:flex;flex-direction:column;gap:12px}
+.g-help{margin:0;font-size:13px;color:var(--muted)}
+.g-card{padding:16px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.g-card .field{margin-bottom:10px;min-width:0}
+.g-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.inp{width:100%;min-height:46px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);padding:10px 12px;font:inherit;font-size:16px}
+textarea.inp{resize:vertical;line-height:1.45}
+select.inp{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 20px,calc(100% - 13px) 20px;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
+.g-foot{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
+.g-rot{color:var(--fg);font-weight:600}
+.link-del{color:#ff8a7a;font-size:13px;font-weight:600;padding:6px 0}
+.gen{padding:18px;border-radius:var(--r);background:var(--surface);border:1px solid var(--accent);display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.gen h3{font-size:18px;font-weight:800}
+.gen .field{margin-bottom:6px}
+.gen .err{margin:0;min-height:0}
+.gen-head{display:flex;justify-content:space-between;align-items:center}
+.link-key{font-size:12px;font-weight:600;color:var(--muted);text-decoration:underline}
+.gen .btn:disabled{opacity:.6}
+.card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.badge{flex:none;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:3px 8px;border-radius:999px}
+.card-new{border-color:var(--accent)}
+.c-prev{font-style:italic;color:var(--fg)!important;opacity:.85}
+.c-acts{display:flex;gap:8px;flex-wrap:wrap}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<section class="screen" id="login">
+  <div class="wrap">
+    <div class="login-head">
+      <div class="brand">MDias</div>
+      <h1>Grave seu vídeo no padrão certo</h1>
+      <p>Entre com o acesso que você recebeu da equipe.</p>
+    </div>
+    <form id="formLogin" novalidate>
+      <div class="field">
+        <label for="usuario">Usuário</label>
+        <input id="usuario" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+      </div>
+      <div class="field">
+        <label for="senha">Senha</label>
+        <input id="senha" type="password" autocomplete="current-password" required>
+      </div>
+      <div class="err" id="loginErr" role="alert"></div>
+      <button class="btn btn-primary" type="submit">Entrar</button>
+    </form>
+    <div class="demo">Protótipo. Doutores: <code>guilherme</code>, <code>andre</code> ou <code>maria</code>. Gestor: <code>gestor</code>. Senha de todos: <code>1234</code>.</div>
+  </div>
+</section>
+
+<!-- ============ HOME ============ -->
+<section class="screen" id="home" hidden>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">MDias</div>
+      <button class="btn btn-ghost btn-sm" id="sair">Sair</button>
+    </div>
+    <div class="hello">
+      <h1 id="olaNome"></h1>
+      <p id="olaUnidade"></p>
+    </div>
+    <div class="eyebrow" style="margin-bottom:12px">Seus roteiros</div>
+    <div class="list" id="listaRoteiros"></div>
+  </div>
+</section>
+
+<!-- ============ ROTEIRO ============ -->
+<section class="screen" id="roteiro" hidden>
+  <div class="wrap">
+    <div class="topbar">
+      <button class="back" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Roteiros</button>
+    </div>
+    <div class="r-head">
+      <div class="eyebrow">Leia antes de gravar</div>
+      <h1 id="rTitulo"></h1>
+      <p id="rObjetivo"></p>
+    </div>
+    <div class="blocks" id="rBlocos"></div>
+  </div>
+  <div class="sticky-cta"><button class="btn btn-primary" id="vamosGravar">Vamos gravar</button></div>
+</section>
+
+<!-- ============ GRAVAR ============ -->
+<section class="screen" id="gravar" hidden>
+  <div class="prompt">
+    <div class="p-meta">
+      <div class="eyebrow" id="pBloco"></div>
+      <div class="p-ctrl">
+        <button class="chip" id="mFrase">Frase</button>
+        <button class="chip" id="mRolar">Rolar</button>
+        <button class="chip" id="vMenos" aria-label="Mais devagar" hidden>−</button>
+        <button class="chip" id="vMais" aria-label="Mais rápido" hidden>+</button>
+      </div>
+    </div>
+    <div class="p-body" id="pBody"></div>
+    <div class="look" id="pDica">Olhe para a lente, logo acima deste texto</div>
+  </div>
+  <div class="stage">
+    <div class="frame">
+      <video id="cam" autoplay playsinline muted></video>
+      <svg class="guide" id="guia" viewBox="0 0 90 160" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>
+      <div class="res" id="res" hidden></div>
+      <div class="cam-msg" id="camMsg" hidden></div>
+      <div class="count" id="count" hidden></div>
+      <div class="controls">
+        <div class="left"><button class="round" id="sairGravar" aria-label="Voltar ao roteiro"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+        <button class="recbtn" id="rec" aria-label="Gravar"><span></span></button>
+        <div class="right"><div class="timer" id="timer" hidden><i></i><span id="tempo">0:00</span></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="review" id="review" hidden>
+    <div class="eyebrow" id="revBloco"></div>
+    <h2>Ficou bom?</h2>
+    <video id="revVideo" playsinline controls></video>
+    <div class="row">
+      <button class="btn btn-ghost" id="regravar">Regravar</button>
+      <button class="btn btn-primary" id="usarTake">Usar este</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GESTÃO ============ -->
+<section class="screen" id="gestao" hidden>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">MDias <span style="color:var(--muted);font-weight:600;font-size:14px">Gestão</span></div>
+      <button class="btn btn-ghost btn-sm" id="sairGestao">Sair</button>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" data-aba="unidades">Unidades</button>
+      <button class="tab" data-aba="doutores">Doutores</button>
+      <button class="tab" data-aba="roteiros">Roteiros</button>
+    </div>
+    <div class="g-body" id="gBody"></div>
+  </div>
+</section>
+
+<!-- ============ EDITOR DE ROTEIRO ============ -->
+<section class="screen" id="editor" hidden>
+  <div class="wrap">
+    <div class="topbar">
+      <button class="back" id="eVoltar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Roteiros</button>
+      <button class="link-del" id="eExcluir">Excluir roteiro</button>
+    </div>
+    <div class="g-body">
+      <div class="field"><label for="eTitulo">Nome do roteiro</label><input class="inp" id="eTitulo"></div>
+      <div class="field"><label for="eObjetivo">Objetivo (o doutor vê isso)</label><input class="inp" id="eObjetivo"></div>
+      <div class="eyebrow" style="margin-top:6px">Blocos de gravação</div>
+      <div class="g-body" id="eBlocos"></div>
+      <button class="btn btn-ghost" id="eAddBloco">+ Adicionar bloco</button>
+      <p class="g-help">As alterações são salvas automaticamente.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL ============ -->
+<section class="screen" id="final" hidden>
+  <div class="wrap">
+    <div class="done-head">
+      <div class="eyebrow" style="color:var(--ok)">Tudo gravado</div>
+      <h1>Agora é só enviar</h1>
+      <p>Toque em "Enviar todos" e salve os vídeos ou mande para a equipe MDias.</p>
+    </div>
+    <div class="list" id="takes"></div>
+    <p class="note">Evite enviar pelo WhatsApp como vídeo comum, porque ele reduz a qualidade. Se for usar o WhatsApp, envie como documento.</p>
+  </div>
+  <div class="sticky-cta">
+    <div style="max-width:524px;margin:0 auto;display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-primary" id="enviarTodos">Enviar todos</button>
+      <button class="btn btn-ghost" data-go="home">Voltar aos roteiros</button>
+    </div>
+  </div>
+</section>
+
+<script>
+/* =====================================================================
+   DADOS INICIAIS (protótipo). O gestor altera tudo pela tela de Gestão.
+   {cidade} no texto é trocado pelo nome da unidade do doutor.
+   enquadramento: "close" (rosto e ombros) ou "medio" (da cintura pra cima)
+   ===================================================================== */
+const GESTORES = [ { usuario:"gestor", senha:"1234", nome:"Gestor de tráfego" } ];
+
+const DADOS_INICIAIS = {
+  unidades: [
+    { id:"u1", nome:"São José dos Campos", roteiro:"implante" },
+    { id:"u2", nome:"Jacareí",             roteiro:"clareamento" }
+  ],
+  doutores: [
+    { id:"d1", nome:"Dr. Guilherme", usuario:"guilherme", senha:"1234", unidade:"u1" },
+    { id:"d2", nome:"Dr. André",     usuario:"andre",     senha:"1234", unidade:"u1" },
+    { id:"d3", nome:"Dra. Maria",    usuario:"maria",     senha:"1234", unidade:"u2" }
+  ],
+  roteiros: {
+  implante: {
+    titulo: "Implante dentário",
+    objetivo: "Anúncio de 30 a 40 segundos convidando para a avaliação de implante.",
+    blocos: [
+      { tipo:"Gancho", enquadramento:"close",
+        texto:"Olá, {cidade}! Perdeu um dente e tem vergonha de sorrir? Esse vídeo é pra você.",
+        dica:"Fale com energia, como se estivesse chamando alguém do outro lado da rua." },
+      { tipo:"Desenvolvimento", enquadramento:"medio",
+        texto:"Aqui na nossa unidade de {cidade}, a gente faz implante com planejamento digital. Você entende cada etapa do tratamento antes de começar. E sai daqui sabendo exatamente o valor e o prazo.",
+        dica:"Tom de conversa, calmo. Pode usar as mãos." },
+      { tipo:"CTA", enquadramento:"close",
+        texto:"Clique no link e agende sua avaliação. Te espero aqui!",
+        dica:"Sorria no final e segure 2 segundos antes de parar." }
+    ]
+  },
+  clareamento: {
+    titulo: "Clareamento dental",
+    objetivo: "Anúncio curto de clareamento para o público que quer um sorriso mais branco.",
+    blocos: [
+      { tipo:"Gancho", enquadramento:"close",
+        texto:"{cidade}, sabe aquele sorriso branquinho que você vê nas fotos? Dá pra ter de forma segura.",
+        dica:"Comece já sorrindo." },
+      { tipo:"Desenvolvimento", enquadramento:"medio",
+        texto:"O clareamento feito com acompanhamento do dentista protege o esmalte e evita sensibilidade. Aqui a gente avalia o seu caso e indica o melhor método pra você.",
+        dica:"Fale devagar e olhe sempre para a lente." },
+      { tipo:"CTA", enquadramento:"close",
+        texto:"Clique no link e agende sua avaliação na nossa unidade de {cidade}.",
+        dica:"Segure 2 segundos em silêncio no final." }
+    ]
+  }
+  }
+};
+/* ===================================================================== */
+
+const $ = s => document.querySelector(s);
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } },
+  set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
+  del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+const tpl = (t, u) => t.replaceAll("{cidade}", u.unidade);
+const slug = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-zA-Z0-9]+/g,"");
+const FRAME_LABEL = { close:"Close · rosto e ombros", medio:"Plano médio · cintura pra cima" };
+
+let user = null, rot = null, rotId = null;
+let bi = 0;            // bloco atual
+let takes = [];        // takes aprovados por bloco
+let modo = store.get("modo") || "frase";
+let wpm = store.get("wpm") || 140;
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s => s.hidden = s.id !== id);
+  window.scrollTo(0,0);
+  if(id !== "gravar") pararCamera();
+}
+document.querySelectorAll("[data-go]").forEach(b => b.onclick = () => { if(b.dataset.go==="home") renderHome(); show(b.dataset.go); });
+
+/* ---------- Dados ---------- */
+let DB = store.get("dados") || JSON.parse(JSON.stringify(DADOS_INICIAIS));
+const salvarDB = () => store.set("dados", DB);
+const novoId = p => p + Math.random().toString(36).slice(2,8);
+
+/* Monta o "usuário" do doutor a partir da unidade em que o gestor colocou ele */
+function perfilDoutor(d){
+  const un = DB.unidades.find(u => u.id === d.unidade);
+  return { usuario:d.usuario, nome:d.nome, unidade: un ? un.nome : "", roteiros: un && DB.roteiros[un.roteiro] ? [un.roteiro] : [] };
+}
+
+/* ---------- Login ---------- */
+$("#formLogin").addEventListener("submit", e => {
+  e.preventDefault();
+  const login = $("#usuario").value.trim().toLowerCase(), senha = $("#senha").value;
+  const g = GESTORES.find(x => x.usuario === login && x.senha === senha);
+  if(g){ $("#loginErr").textContent = ""; store.set("sessao", "g:"+g.usuario); abrirGestao(); return; }
+  const d = DB.doutores.find(x => x.usuario.toLowerCase() === login && x.senha === senha);
+  if(!d){ $("#loginErr").textContent = "Usuário ou senha incorretos. Confira o acesso que a equipe enviou."; return; }
+  $("#loginErr").textContent = "";
+  store.set("sessao", "d:"+d.usuario);
+  entrar(perfilDoutor(d));
+});
+function sair(){ store.del("sessao"); user = null; $("#senha").value=""; show("login"); }
+$("#sair").onclick = sair;
+
+function entrar(u){
+  user = u; renderHome();
+  if(u.roteiros.length === 1) abrirRoteiro(u.roteiros[0]);   // já abre o roteiro da unidade
+  else show("home");
+}
+
+/* ---------- Home ---------- */
+function progresso(id){ return store.get(`prog:${user.usuario}:${id}`) || []; }
+function renderHome(){
+  $("#olaNome").textContent = `Olá, ${user.nome}`;
+  $("#olaUnidade").textContent = `Unidade ${user.unidade}`;
+  const box = $("#listaRoteiros"); box.innerHTML = "";
+  if(!user.roteiros.length){ box.innerHTML = `<div class="card"><h3>Nenhum roteiro liberado ainda</h3><p>A equipe MDias vai liberar o roteiro da sua unidade. Volte mais tarde.</p></div>`; }
+  user.roteiros.forEach(id => {
+    const r = DB.roteiros[id]; if(!r) return;
+    const prog = progresso(id);
+    const card = document.createElement("button");
+    card.className = "card";
+    card.innerHTML = `<h3></h3><p></p><div class="steps"></div><div class="card-foot"><span>${prog.length===r.blocos.length?"Gravado · gravar de novo":"Abrir roteiro"}</span><span>→</span></div>`;
+    card.querySelector("h3").textContent = r.titulo;
+    card.querySelector("p").textContent = r.objetivo;
+    r.blocos.forEach((b,i) => {
+      const s = document.createElement("span");
+      s.className = "step" + (prog.includes(i) ? " done" : "");
+      s.innerHTML = "<i></i>"; s.append(b.tipo);
+      card.querySelector(".steps").append(s);
+    });
+    card.onclick = () => abrirRoteiro(id);
+    box.append(card);
+  });
+}
+
+/* ---------- Roteiro ---------- */
+function miniFrame(tipo){
+  return tipo==="close"
+    ? `<svg viewBox="0 0 14 20" fill="none" stroke="currentColor" stroke-width="1.2"><rect x=".6" y=".6" width="12.8" height="18.8" rx="2"/><circle cx="7" cy="8" r="3.6"/><path d="M1 19c1-4 3-5.5 6-5.5s5 1.5 6 5.5"/></svg>`
+    : `<svg viewBox="0 0 14 20" fill="none" stroke="currentColor" stroke-width="1.2"><rect x=".6" y=".6" width="12.8" height="18.8" rx="2"/><circle cx="7" cy="6.5" r="2.3"/><path d="M2.5 19.4V13c0-2 2-3.5 4.5-3.5s4.5 1.5 4.5 3.5v6.4"/></svg>`;
+}
+function abrirRoteiro(id){
+  rotId = id; rot = DB.roteiros[id];
+  $("#rTitulo").textContent = rot.titulo;
+  $("#rObjetivo").textContent = rot.objetivo;
+  const box = $("#rBlocos"); box.innerHTML = "";
+  rot.blocos.forEach((b,i) => {
+    const el = document.createElement("div"); el.className = "block";
+    el.innerHTML = `<div class="block-top"><span class="tag">${i+1} · ${b.tipo}</span><span class="frame-chip">${miniFrame(b.enquadramento)}<span></span></span></div><p class="text"></p><p class="tip"></p>`;
+    el.querySelector(".frame-chip span").textContent = FRAME_LABEL[b.enquadramento];
+    el.querySelector(".text").textContent = tpl(b.texto, user);
+    el.querySelector(".tip").textContent = "Dica: " + b.dica;
+    box.append(el);
+  });
+  show("roteiro");
+}
+$("#vamosGravar").onclick = () => { bi = 0; takes = []; abrirGravacao(); };
+
+/* ---------- Câmera ---------- */
+let stream = null, recorder = null, chunks = [], gravando = false, t0 = 0, tick = null, wake = null;
+const MIME = ["video/mp4;codecs=avc1,mp4a","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"]
+  .find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m)) || "";
+
+async function abrirGravacao(){
+  show("gravar");
+  $("#review").hidden = true;
+  renderBloco();
+  if(!navigator.mediaDevices?.getUserMedia){ camErro("Este navegador não libera a câmera. Abra o link no Safari (iPhone) ou no Chrome (Android)."); return; }
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({
+      video:{ facingMode:"user", width:{ideal:1080}, height:{ideal:1920}, frameRate:{ideal:30} },
+      audio:{ echoCancellation:true, noiseSuppression:true }
+    });
+    const v = $("#cam"); v.srcObject = stream;
+    v.onloadedmetadata = () => { $("#res").textContent = `${v.videoWidth}×${v.videoHeight}`; $("#res").hidden = false; };
+    $("#camMsg").hidden = true;
+    try{ wake = await navigator.wakeLock?.request("screen"); }catch(e){}
+  }catch(e){
+    camErro(e.name==="NotAllowedError"
+      ? "Você não liberou a câmera. Toque no ícone de cadeado ou “aA” na barra de endereço, permita câmera e microfone e recarregue a página."
+      : "Não consegui abrir a câmera. Feche outros apps que estejam usando a câmera e tente de novo.");
+  }
+}
+function camErro(msg){ const m = $("#camMsg"); m.hidden = false; m.textContent = msg; }
+function pararCamera(){
+  if(gravando) pararGravacao(true);
+  stream?.getTracks().forEach(t => t.stop()); stream = null;
+  try{ wake?.release(); }catch(e){} wake = null;
+}
+
+/* ---------- Guia de enquadramento ---------- */
+function desenharGuia(tipo){
+  const g = $("#guia");
+  const thirds = `<line x1="30" y1="0" x2="30" y2="160" stroke="#fff" stroke-width=".2" opacity=".25"/><line x1="60" y1="0" x2="60" y2="160" stroke="#fff" stroke-width=".2" opacity=".25"/>`;
+  g.innerHTML = tipo==="close" ? thirds + `
+    <line class="ln" x1="6" y1="20" x2="84" y2="20"/><text x="8" y="18">TOPO DA CABEÇA</text>
+    <line class="ln" x1="6" y1="47" x2="84" y2="47"/><text x="8" y="45.2">OLHOS AQUI</text>
+    <ellipse class="shape" cx="45" cy="50" rx="19" ry="26"/>
+    <path class="shape" d="M35 74 L35.5 86 Q10 92 -2 122 M55 74 L54.5 86 Q80 92 92 122"/>`
+  : thirds + `
+    <line class="ln" x1="6" y1="26" x2="84" y2="26"/><text x="8" y="24">TOPO DA CABEÇA</text>
+    <line class="ln" x1="6" y1="43" x2="84" y2="43"/><text x="8" y="41.2">OLHOS AQUI</text>
+    <ellipse class="shape" cx="45" cy="45" rx="13" ry="17.5"/>
+    <path class="shape" d="M38.5 61 L39 68 Q20 70 15 84 L11 160 M51.5 61 L51 68 Q70 70 75 84 L79 160"/>
+    <text x="8" y="154">CINTURA NA BORDA DE BAIXO</text>`;
+}
+
+/* ---------- Prompter ---------- */
+let frases = [], fi = 0, rolarRAF = null;
+function quebrarFrases(t){ return (t.match(/[^.!?…]+[.!?…]*/g) || [t]).map(s=>s.trim()).filter(Boolean); }
+
+function renderBloco(){
+  const b = rot.blocos[bi];
+  $("#pBloco").textContent = `${bi+1}/${rot.blocos.length} · ${b.tipo} · ${b.enquadramento==="close"?"Close":"Plano médio"}`;
+  frases = quebrarFrases(tpl(b.texto, user)); fi = 0;
+  desenharGuia(b.enquadramento);
+  renderPrompt();
+}
+function renderPrompt(){
+  cancelAnimationFrame(rolarRAF);
+  $("#mFrase").classList.toggle("on", modo==="frase");
+  $("#mRolar").classList.toggle("on", modo==="rolar");
+  $("#vMenos").hidden = $("#vMais").hidden = modo!=="rolar";
+  const body = $("#pBody"); body.innerHTML = "";
+  if(modo==="frase"){
+    const p = document.createElement("p"); p.className="frase"; p.textContent = frases[fi] || "";
+    const n = document.createElement("p"); n.className="frase-next";
+    n.textContent = frases[fi+1] ? "Depois: " + frases[fi+1] : (frases.length>1 ? "Última frase" : "");
+    const tap = document.createElement("button"); tap.className="p-tap"; tap.setAttribute("aria-label","Próxima frase");
+    tap.onclick = () => { if(fi < frases.length-1){ fi++; renderPrompt(); } };
+    body.append(p,n,tap);
+    $("#pDica").textContent = gravando ? "Toque no texto para a próxima frase" : "Olhe para a lente, logo acima deste texto";
+  }else{
+    const sc = document.createElement("div"); sc.className="scroller"; sc.id="scroller";
+    const p = document.createElement("p"); p.textContent = frases.join(" ");
+    sc.append(p); body.append(sc);
+    $("#pDica").textContent = `Rolagem: ${wpm} palavras/min`;
+  }
+}
+function iniciarRolagem(){
+  const sc = $("#scroller"); if(!sc) return;
+  let last = performance.now(), pos = 0;
+  const palavras = frases.join(" ").split(/\s+/).length;
+  const step = now => {
+    const dur = palavras / wpm * 60;                     // segundos para ler tudo
+    const max = sc.scrollHeight - sc.clientHeight * 1.2;
+    pos += (now - last) / 1000 * (max / dur); last = now;
+    sc.scrollTop = pos;
+    if(gravando && pos < sc.scrollHeight) rolarRAF = requestAnimationFrame(step);
+  };
+  rolarRAF = requestAnimationFrame(step);
+}
+$("#mFrase").onclick = () => { modo="frase"; store.set("modo",modo); renderPrompt(); };
+$("#mRolar").onclick = () => { modo="rolar"; store.set("modo",modo); renderPrompt(); if(gravando) iniciarRolagem(); };
+$("#vMenos").onclick = () => { wpm=Math.max(80,wpm-10); store.set("wpm",wpm); $("#pDica").textContent=`Rolagem: ${wpm} palavras/min`; };
+$("#vMais").onclick  = () => { wpm=Math.min(220,wpm+10); store.set("wpm",wpm); $("#pDica").textContent=`Rolagem: ${wpm} palavras/min`; };
+
+/* ---------- Gravação ---------- */
+$("#rec").onclick = () => gravando ? pararGravacao() : contagem();
+$("#sairGravar").onclick = () => { pararCamera(); show("roteiro"); };
+
+function contagem(){
+  if(!stream) return;
+  $("#rec").disabled = true;
+  let n = 3; const c = $("#count"); c.hidden = false; c.textContent = n;
+  const iv = setInterval(() => {
+    n--;
+    if(n>0){ c.textContent = n; return; }
+    clearInterval(iv); c.hidden = true; $("#rec").disabled = false; iniciarGravacao();
+  }, 1000);
+}
+function iniciarGravacao(){
+  chunks = [];
+  try{
+    recorder = new MediaRecorder(stream, MIME ? { mimeType:MIME, videoBitsPerSecond:8_000_000 } : {});
+  }catch(e){ recorder = new MediaRecorder(stream); }
+  recorder.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+  recorder.onstop = finalizarTake;
+  recorder.start(500);
+  gravando = true; t0 = Date.now();
+  $("#rec").classList.add("on"); $("#rec").setAttribute("aria-label","Parar");
+  $("#guia").classList.add("rec");
+  $("#timer").hidden = false; $("#tempo").textContent = "0:00";
+  tick = setInterval(() => { const s = Math.floor((Date.now()-t0)/1000); $("#tempo").textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }, 250);
+  renderPrompt();
+  if(modo==="rolar") iniciarRolagem();
+}
+let descartar = false;
+function pararGravacao(descarte=false){
+  descartar = descarte;
+  gravando = false; clearInterval(tick); cancelAnimationFrame(rolarRAF);
+  $("#rec").classList.remove("on"); $("#rec").setAttribute("aria-label","Gravar");
+  $("#guia").classList.remove("rec"); $("#timer").hidden = true;
+  if(recorder && recorder.state !== "inactive") recorder.stop();
+}
+let takeAtual = null;
+function finalizarTake(){
+  if(descartar){ descartar=false; return; }
+  const type = recorder.mimeType || MIME || "video/webm";
+  const blob = new Blob(chunks, { type });
+  const ext = type.includes("mp4") ? "mp4" : "webm";
+  const b = rot.blocos[bi];
+  const nome = `${slug(user.unidade)}_${slug(rot.titulo)}_${String(bi+1).padStart(2,"0")}_${slug(b.tipo)}.${ext}`;
+  takeAtual = { blob, url: URL.createObjectURL(blob), nome, tipo:b.tipo };
+  $("#revBloco").textContent = `${bi+1}/${rot.blocos.length} · ${b.tipo}`;
+  const v = $("#revVideo"); v.src = takeAtual.url; v.play().catch(()=>{});
+  $("#review").hidden = false;
+}
+$("#regravar").onclick = () => {
+  URL.revokeObjectURL(takeAtual.url); takeAtual = null;
+  $("#revVideo").pause(); $("#review").hidden = true; fi = 0; renderPrompt();
+};
+$("#usarTake").onclick = () => {
+  $("#revVideo").pause();
+  takes[bi] = takeAtual; takeAtual = null;
+  const prog = new Set(progresso(rotId)); prog.add(bi);
+  store.set(`prog:${user.usuario}:${rotId}`, [...prog]);
+  if(bi < rot.blocos.length-1){ bi++; $("#review").hidden = true; renderBloco(); }
+  else { pararCamera(); renderFinal(); show("final"); }
+};
+
+/* ---------- Final / envio ---------- */
+function renderFinal(){
+  const box = $("#takes"); box.innerHTML = "";
+  takes.forEach(t => {
+    const el = document.createElement("div"); el.className = "take";
+    el.innerHTML = `<video muted playsinline preload="metadata"></video><div style="min-width:0"><h3></h3><p></p></div><button class="btn btn-ghost btn-sm">Salvar</button>`;
+    el.querySelector("video").src = t.url + "#t=0.1";
+    el.querySelector("h3").textContent = t.tipo;
+    el.querySelector("p").textContent = t.nome;
+    el.querySelector("button").onclick = () => salvar([t]);
+    box.append(el);
+  });
+}
+$("#enviarTodos").onclick = () => salvar(takes);
+async function salvar(lista){
+  const files = lista.map(t => new File([t.blob], t.nome, { type:t.blob.type }));
+  if(navigator.canShare && navigator.canShare({ files })){
+    try{ await navigator.share({ files, title: `${rot.titulo} · ${user.unidade}` }); return; }
+    catch(e){ if(e.name==="AbortError") return; }
+  }
+  files.forEach(f => {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(f); a.download = f.name;
+    document.body.append(a); a.click(); a.remove();
+  });
+}
+
+/* =====================================================================
+   GESTÃO (gestor de tráfego)
+   ===================================================================== */
+let aba = "unidades";
+function abrirGestao(){ renderGestao(); show("gestao"); }
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => { aba = t.dataset.aba; renderGestao(); });
+$("#sairGestao").onclick = sair;
+
+function el(html){ const d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstChild; }
+function opts(list, sel, vazio){
+  return (vazio ? `<option value="">${vazio}</option>` : "") +
+    list.map(([v,t]) => `<option value="${v}" ${v===sel?"selected":""}>${t.replace(/</g,"&lt;")}</option>`).join("");
+}
+const listaRoteiros = () => Object.entries(DB.roteiros).map(([id,r]) => [id, r.titulo]);
+const listaUnidades = () => DB.unidades.map(u => [u.id, u.nome]);
+
+function renderGestao(){
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.dataset.aba === aba));
+  const box = $("#gBody"); box.innerHTML = "";
+  if(aba === "unidades"){
+    box.append(el(`<p class="g-help">Escolha qual roteiro cada unidade vai gravar. Todos os doutores da unidade recebem esse roteiro.</p>`));
+    DB.unidades.forEach(u => {
+      const n = DB.doutores.filter(d => d.unidade === u.id).length;
+      const row = el(`<div class="g-card">
+        <div class="field"><label>Unidade</label><input class="inp" data-k="nome"></div>
+        <div class="field"><label>Roteiro</label><select class="inp" data-k="roteiro">${opts(listaRoteiros(), u.roteiro, "Sem roteiro")}</select></div>
+        <div class="g-foot"><span>${n} doutor${n===1?"":"es"}</span><button class="link-del">Excluir</button></div></div>`);
+      row.querySelector('[data-k="nome"]').value = u.nome;
+      row.querySelectorAll(".inp").forEach(i => i.oninput = () => { u[i.dataset.k] = i.value; salvarDB(); });
+      row.querySelector(".link-del").onclick = () => {
+        if(n && !confirm(`${u.nome} tem ${n} doutor(es). Excluir mesmo assim? Eles ficarão sem unidade.`)) return;
+        DB.unidades = DB.unidades.filter(x => x !== u);
+        DB.doutores.forEach(d => { if(d.unidade === u.id) d.unidade = ""; });
+        salvarDB(); renderGestao();
+      };
+      box.append(row);
+    });
+    const add = el(`<button class="btn btn-ghost">+ Adicionar unidade</button>`);
+    add.onclick = () => { DB.unidades.push({ id:novoId("u"), nome:"Nova unidade", roteiro:"" }); salvarDB(); renderGestao(); };
+    box.append(add);
+  }
+  if(aba === "doutores"){
+    box.append(el(`<p class="g-help">Cadastre o acesso de cada doutor e a unidade dele. Ele vai gravar o roteiro dessa unidade.</p>`));
+    DB.doutores.forEach(d => {
+      const row = el(`<div class="g-card">
+        <div class="field"><label>Nome</label><input class="inp" data-k="nome"></div>
+        <div class="g-2">
+          <div class="field"><label>Usuário</label><input class="inp" data-k="usuario" autocapitalize="none"></div>
+          <div class="field"><label>Senha</label><input class="inp" data-k="senha"></div>
+        </div>
+        <div class="field"><label>Unidade</label><select class="inp" data-k="unidade">${opts(listaUnidades(), d.unidade, "Escolha a unidade")}</select></div>
+        <div class="g-foot"><span class="g-rot"></span><button class="link-del">Excluir</button></div></div>`);
+      ["nome","usuario","senha"].forEach(k => row.querySelector(`[data-k="${k}"]`).value = d[k]);
+      const rotTxt = () => { const un = DB.unidades.find(u => u.id === d.unidade); const r = un && DB.roteiros[un.roteiro]; row.querySelector(".g-rot").textContent = r ? "Vai gravar: " + r.titulo : "Sem roteiro"; };
+      rotTxt();
+      row.querySelectorAll(".inp").forEach(i => i.oninput = () => { d[i.dataset.k] = i.dataset.k==="usuario" ? i.value.trim().toLowerCase() : i.value; salvarDB(); rotTxt(); });
+      row.querySelector(".link-del").onclick = () => { if(!confirm(`Excluir o acesso de ${d.nome}?`)) return; DB.doutores = DB.doutores.filter(x => x !== d); salvarDB(); renderGestao(); };
+      box.append(row);
+    });
+    const add = el(`<button class="btn btn-ghost">+ Adicionar doutor</button>`);
+    add.onclick = () => { DB.doutores.push({ id:novoId("d"), nome:"Dr(a). ", usuario:"", senha:Math.random().toString().slice(2,6), unidade:"" }); salvarDB(); renderGestao(); };
+    box.append(add);
+  }
+  if(aba === "roteiros"){
+    box.append(painelGerador());
+    box.append(el(`<p class="g-help">Use {cidade} no texto para entrar o nome da unidade automaticamente.</p>`));
+    const ids = Object.keys(DB.roteiros).sort((a,b) => ultimosGerados.includes(b) - ultimosGerados.includes(a));
+    ids.forEach(id => {
+      const r = DB.roteiros[id];
+      const usado = DB.unidades.filter(u => u.roteiro === id).map(u => u.nome);
+      const novo = ultimosGerados.includes(id);
+      const card = el(`<div class="card${novo?" card-new":""}"><div class="card-top"><h3></h3>${novo?'<span class="badge">Novo</span>':""}</div><p class="c-info"></p><p class="c-prev"></p><div class="c-acts"></div></div>`);
+      card.querySelector("h3").textContent = r.titulo;
+      card.querySelector(".c-info").textContent = `${r.blocos.length} blocos · ${usado.length ? "Usado em: " + usado.join(", ") : "Nenhuma unidade usando"}`;
+      card.querySelector(".c-prev").textContent = "“" + (r.blocos[0]?.texto || "") + "”";
+      const acts = card.querySelector(".c-acts");
+      const ed = el(`<button class="btn btn-ghost btn-sm">Ver e editar</button>`); ed.onclick = () => editarRoteiro(id); acts.append(ed);
+      const un = r.cidade && DB.unidades.find(u => norm(u.nome) === norm(r.cidade));
+      if(un && un.roteiro !== id){
+        const usar = el(`<button class="btn btn-primary btn-sm"></button>`);
+        usar.textContent = `Usar em ${un.nome}`;
+        usar.onclick = () => { un.roteiro = id; salvarDB(); renderGestao(); };
+        acts.append(usar);
+      }
+      box.append(card);
+    });
+    const add = el(`<button class="btn btn-ghost">+ Novo roteiro</button>`);
+    add.onclick = () => {
+      const id = novoId("r");
+      DB.roteiros[id] = { titulo:"Novo roteiro", objetivo:"", blocos:[
+        { tipo:"Gancho", enquadramento:"close", texto:"Olá, {cidade}! ", dica:"" },
+        { tipo:"Desenvolvimento", enquadramento:"medio", texto:"", dica:"" },
+        { tipo:"CTA", enquadramento:"close", texto:"Clique no link e agende sua avaliação.", dica:"" } ] };
+      salvarDB(); editarRoteiro(id);
+    };
+    box.append(add);
+  }
+}
+
+/* ---------- Gerador de roteiros com IA ---------- */
+let ultimosGerados = [];
+let gerando = false;
+const norm = s => (s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").trim().toLowerCase();
+const TRATAMENTOS = ["Implante dentário","Clareamento dental","Lentes de contato dental","Aparelho ortodôntico","Alinhadores invisíveis","Prótese dentária","Limpeza e prevenção","Tratamento de canal"];
+
+function painelGerador(){
+  const temChave = !!store.get("apiKey");
+  const p = el(`<div class="gen">
+    <div class="gen-head"><div class="eyebrow" style="color:var(--accent)">Gerar com IA</div><button class="link-key" type="button">${temChave?"Trocar chave da API":""}</button></div>
+    <h3>Gerar roteiros para uma unidade</h3>
+    <p class="g-help">Cria 3 roteiros de uma vez: dor → solução, quebra de objeção e chamada local.</p>
+    <div class="field"><label for="gTrat">Tratamento</label><input class="inp" id="gTrat" list="gTratList" placeholder="Ex: Implante dentário"><datalist id="gTratList">${TRATAMENTOS.map(t=>`<option value="${t}">`).join("")}</datalist></div>
+    <div class="field"><label for="gCid">Cidade ou unidade</label><input class="inp" id="gCid" list="gCidList" placeholder="Ex: Jacareí"><datalist id="gCidList">${DB.unidades.map(u=>`<option value="${u.nome.replace(/"/g,"&quot;")}">`).join("")}</datalist></div>
+    <div class="field"><label for="gObs">Observações (opcional)</label><input class="inp" id="gObs" placeholder="Ex: avaliação gratuita em novembro"></div>
+    <div class="field" id="gKeyBox" ${temChave?"hidden":""}><label for="gKey">Chave da API da Anthropic</label><input class="inp" id="gKey" type="password" autocomplete="off" placeholder="sk-ant-..."><span class="g-help">Fica salva só neste aparelho.</span></div>
+    <div class="err" id="gErr" role="alert"></div>
+    <button class="btn btn-primary" id="gBtn">${gerando?"Gerando roteiros…":"Gerar 3 roteiros"}</button>
+  </div>`);
+  p.querySelector(".link-key").onclick = () => { p.querySelector("#gKeyBox").hidden = false; p.querySelector("#gKey").focus(); };
+  p.querySelector("#gBtn").disabled = gerando;
+  p.querySelector("#gBtn").onclick = () => gerarRoteiros(p);
+  return p;
+}
+
+const PROMPT_SISTEMA = `Você é roteirista de anúncios de tráfego pago (Instagram e Facebook) para uma rede de clínicas odontológicas no Brasil.
+Quem grava é o próprio dentista, sozinho, com a câmera frontal do celular, falando direto para a câmera.
+
+Escreva 3 roteiros para o tratamento e a cidade informados, um em cada modelo:
+1. "Dor → solução": o gancho nomeia o problema ou incômodo que o paciente sente; o desenvolvimento mostra que há solução e como ela funciona, sem termos técnicos; o CTA convida para a avaliação.
+2. "Quebra de objeção": o gancho traz a dúvida ou o medo mais comum sobre o tratamento (dor, preço, tempo, resultado); o desenvolvimento responde com calma e segurança; o CTA convida a tirar as dúvidas pessoalmente.
+3. "Chamada local": o gancho chama a cidade pelo nome logo nas primeiras palavras; o desenvolvimento dá um motivo concreto para agendar agora; o CTA é curto e direto.
+
+Regras:
+- Cada roteiro tem exatamente 3 blocos: "Gancho", "Desenvolvimento" e "CTA".
+- Gancho com no máximo 15 palavras (cerca de 3 segundos). Desenvolvimento com 35 a 60 palavras. CTA com no máximo 15 palavras, terminando com o convite para clicar no link e agendar.
+- Duração total entre 25 e 40 segundos falados.
+- Linguagem simples, frases curtas, português do Brasil falado, primeira pessoa ("aqui na nossa unidade de ...").
+- Cite a cidade pelo nome em pelo menos um bloco de cada roteiro.
+- Siga as regras de publicidade do Conselho Federal de Odontologia: não prometa resultado, não use "garantido", "sem dor", "o melhor", "o mais barato", não cite preço nem desconto (a não ser que as observações peçam e permitam), não use antes e depois, não critique outros profissionais.
+- Enquadramento: "close" (rosto e ombros) para Gancho e CTA; "medio" (da cintura pra cima) para o Desenvolvimento.
+- Dica: uma frase curta orientando o dentista a interpretar o bloco (energia, ritmo, olhar, gesto).
+
+Responda SOMENTE com JSON válido, sem texto antes ou depois, neste formato:
+{"roteiros":[{"modelo":"Dor → solução","objetivo":"uma frase sobre o que o anúncio busca","blocos":[{"tipo":"Gancho","enquadramento":"close","texto":"...","dica":"..."},{"tipo":"Desenvolvimento","enquadramento":"medio","texto":"...","dica":"..."},{"tipo":"CTA","enquadramento":"close","texto":"...","dica":"..."}]}]}`;
+
+async function gerarRoteiros(p){
+  const trat = p.querySelector("#gTrat").value.trim();
+  const cid  = p.querySelector("#gCid").value.trim();
+  const obs  = p.querySelector("#gObs").value.trim();
+  const keyIn = p.querySelector("#gKey").value.trim();
+  const err = p.querySelector("#gErr"); err.textContent = "";
+  if(keyIn) store.set("apiKey", keyIn);
+  const key = keyIn || store.get("apiKey");
+  if(!trat || !cid){ err.textContent = "Preencha o tratamento e a cidade."; return; }
+  if(!key){ err.textContent = "Cole a chave da API da Anthropic para gerar."; p.querySelector("#gKeyBox").hidden = false; return; }
+
+  gerando = true; const btn = p.querySelector("#gBtn"); btn.disabled = true; btn.textContent = "Gerando roteiros…";
+  try{
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{ "content-type":"application/json", "x-api-key":key, "anthropic-version":"2023-06-01", "anthropic-dangerous-direct-browser-access":"true" },
+      body: JSON.stringify({
+        model:"claude-sonnet-5-5", max_tokens:3000, system:PROMPT_SISTEMA,
+        messages:[{ role:"user", content:`Tratamento: ${trat}\nCidade: ${cid}${obs ? "\nObservações: " + obs : ""}` }]
+      })
+    });
+    if(res.status === 401) throw new Error("A chave da API não foi aceita. Confira se copiou a chave inteira.");
+    if(res.status === 429) throw new Error("Muitos pedidos seguidos. Espere um minuto e tente de novo.");
+    if(!res.ok) throw new Error(`O serviço de IA respondeu com erro (${res.status}). Tente de novo em instantes.`);
+    const data = await res.json();
+    const txt = (data.content || []).map(c => c.text || "").join("");
+    const json = JSON.parse(txt.slice(txt.indexOf("{"), txt.lastIndexOf("}") + 1));
+    const novos = [];
+    (json.roteiros || []).forEach(r => {
+      if(!r.blocos?.length) return;
+      const id = novoId("r");
+      DB.roteiros[id] = {
+        titulo: `${trat} · ${cid} · ${r.modelo}`,
+        objetivo: r.objetivo || "",
+        cidade: cid,
+        blocos: r.blocos.map(b => ({ tipo:b.tipo || "Bloco", enquadramento: b.enquadramento==="medio" ? "medio" : "close", texto:b.texto || "", dica:b.dica || "" }))
+      };
+      novos.push(id);
+    });
+    if(!novos.length) throw new Error("A IA não devolveu roteiros nesse formato. Tente gerar de novo.");
+    ultimosGerados = novos; salvarDB();
+  }catch(e){
+    gerando = false; renderGestao();
+    $("#gErr").textContent = e instanceof SyntaxError ? "A resposta da IA veio incompleta. Tente gerar de novo." : (e.message === "Failed to fetch" ? "Sem conexão com o serviço de IA. Confira a internet e tente de novo." : e.message);
+    $("#gTrat").value = trat; $("#gCid").value = cid; $("#gObs").value = obs;
+    return;
+  }
+  gerando = false; renderGestao();
+}
+
+let editId = null;
+function editarRoteiro(id){
+  editId = id; const r = DB.roteiros[id];
+  $("#eTitulo").value = r.titulo; $("#eObjetivo").value = r.objetivo;
+  $("#eTitulo").oninput = () => { r.titulo = $("#eTitulo").value; salvarDB(); };
+  $("#eObjetivo").oninput = () => { r.objetivo = $("#eObjetivo").value; salvarDB(); };
+  renderBlocosEditor(); show("editor");
+}
+function renderBlocosEditor(){
+  const r = DB.roteiros[editId], box = $("#eBlocos"); box.innerHTML = "";
+  r.blocos.forEach((b, i) => {
+    const row = el(`<div class="g-card">
+      <div class="g-2">
+        <div class="field"><label>Bloco ${i+1}</label><input class="inp" data-k="tipo"></div>
+        <div class="field"><label>Enquadramento</label><select class="inp" data-k="enquadramento">${opts([["close","Close"],["medio","Plano médio"]], b.enquadramento)}</select></div>
+      </div>
+      <div class="field"><label>Texto que o doutor fala</label><textarea class="inp" data-k="texto" rows="4"></textarea></div>
+      <div class="field"><label>Dica de interpretação</label><input class="inp" data-k="dica"></div>
+      <div class="g-foot"><span></span><button class="link-del">Remover bloco</button></div></div>`);
+    ["tipo","texto","dica"].forEach(k => row.querySelector(`[data-k="${k}"]`).value = b[k]);
+    row.querySelectorAll(".inp").forEach(inp => inp.oninput = () => { b[inp.dataset.k] = inp.value; salvarDB(); });
+    row.querySelector(".link-del").onclick = () => { if(r.blocos.length < 2) return; r.blocos.splice(i,1); salvarDB(); renderBlocosEditor(); };
+    box.append(row);
+  });
+}
+$("#eAddBloco").onclick = () => { DB.roteiros[editId].blocos.push({ tipo:"Novo bloco", enquadramento:"close", texto:"", dica:"" }); salvarDB(); renderBlocosEditor(); };
+$("#eVoltar").onclick = () => { aba = "roteiros"; renderGestao(); show("gestao"); };
+$("#eExcluir").onclick = () => {
+  const r = DB.roteiros[editId];
+  if(!confirm(`Excluir o roteiro "${r.titulo}"? As unidades que usam ele ficarão sem roteiro.`)) return;
+  delete DB.roteiros[editId];
+  DB.unidades.forEach(u => { if(u.roteiro === editId) u.roteiro = ""; });
+  salvarDB(); aba = "roteiros"; renderGestao(); show("gestao");
+};
+
+/* ---------- Início ---------- */
+const s = store.get("sessao") || "";
+if(s.startsWith("g:")) abrirGestao();
+else {
+  const d = s.startsWith("d:") && DB.doutores.find(x => x.usuario === s.slice(2));
+  d ? entrar(perfilDoutor(d)) : show("login");
+}
+</script>
+</body>
+</html>
